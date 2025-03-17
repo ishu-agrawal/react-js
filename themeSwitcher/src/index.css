@@ -1,0 +1,4 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *)) 
+
+/* above line while theme mode based on class, by default it is based on browser theme */
