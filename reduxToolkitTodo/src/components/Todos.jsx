@@ -1,26 +1,21 @@
 import React, {useState} from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { removeTodo, updateTodo  } from '../features/todo/todoSlice'
+import { removeTodo, setEditTodo  } from '../features/todo/todoSlice'
 
 export default function Todos() {
    const todos = useSelector(state => state.todos)
-   const [editId, setEditId] = useState(null);
-   const [editText, setEditText] = useState('');
- 
+   const editTodo = useSelector(state => state.editTodo)
    const handleUpdate = (id, text) => {
-     setEditId(id);
-     setEditText(text);
-   };
- 
-  const saveUpdate = (e) => {
-    e.preventDefault();
-    dispatch(updateTodo({ id: editId, text: editText }));
-    setEditId(null);
-    setEditText('');
+    dispatch(setEditTodo({ id, text })); // Dispatch the todo to be edited
   };
 
-
    const dispatch = useDispatch()
+
+   const handleCancel = (id, text) => {
+      dispatch(setEditTodo(null))
+   }
+   
+
   return (
     <>
    <div>Todos</div>
@@ -30,29 +25,22 @@ export default function Todos() {
             className="mt-4 flex justify-between items-center bg-zinc-800 px-4 py-2 rounded"
             key={todo.id}
           >
-            {editId === todo.id ? (
-              <form onSubmit={saveUpdate} className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  className="bg-gray-800 rounded border border-gray-700 text-white py-1 px-2"
-                />
-                <button
-                  type="submit"
-                  className="text-white bg-green-500 px-2 py-1 rounded"
-                >
-                  Save
-                </button>
-              </form>
-            ) : (
-              <div className="text-white">{todo.text}</div>
-            )}
+          <div className="text-white">{todo.text}</div>
+          {editTodo && editTodo.id === todo.id ? (
+            <button 
+            onClick={() => handleCancel(todo.id, todo.text)}
+            className="text-white bg-gray-500 border-0 py-1 px-4 focus:outline-none hover:bg-gray-600 rounded text-md">
+            Cancel
+          </button>
+          ) : (
+            <>
             <button 
               onClick={() => handleUpdate(todo.id, todo.text)}
               className="text-white bg-orange-500 border-0 py-1 px-4 focus:outline-none hover:bg-orange-600 rounded text-md">
               Update
             </button>
+            </>
+          )}
             <button
              onClick={() => dispatch(removeTodo(todo.id))}
               className="text-white bg-red-500 border-0 py-1 px-4 focus:outline-none hover:bg-red-600 rounded text-md"
